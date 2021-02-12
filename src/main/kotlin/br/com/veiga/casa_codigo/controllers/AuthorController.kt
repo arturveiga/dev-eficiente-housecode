@@ -3,6 +3,8 @@ package br.com.veiga.casa_codigo.controllers
 import br.com.veiga.casa_codigo.models.Author
 import org.springframework.http.HttpStatus
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.WebDataBinder
+import org.springframework.web.bind.annotation.InitBinder
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -15,31 +17,28 @@ import javax.validation.Valid
 
 /**
  *
- * NECESSIDADES
-    É necessário cadastrar um novo autor no sistema.
-    Todo autor tem um nome, email e uma descrição. Também queremos saber o instante exato que ele foi registrado. - ok
-
-   RESTRIÇÕES
-    O instante não pode ser nulo - ok
-    O email é obrigatório
-    O email tem que ter formato válido
-    O nome é obrigatório
-    A descrição é obrigatória e não pode passar de 400 caracteres
+NECESSIDADES
+    O email do autor precisa ser único no sistema
     resultado esperado
-    Um novo autor criado e status 200 retornado
- *
+    Erro de validação no caso de email duplicado
  *
  */
 
 // CDD MAX Points = 7
-// ICP = 3
+// ICP = 4
 
 @RestController
 @RequestMapping("/v1/authors")
 class AuthorController(
-    val entityManager: EntityManager
+    val entityManager: EntityManager,
+    //1
+    val authorEmailDuplicatedValidator: AuthorEmailDuplicatedValidator
 ) {
 
+    @InitBinder
+    fun init(binder: WebDataBinder){
+        binder.addValidators(authorEmailDuplicatedValidator)
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -49,6 +48,7 @@ class AuthorController(
     @Transactional
     fun create(@Valid @RequestBody request: AuthorRequest) : Author  {
         val author = request.toModel()
+        // mais coisas aqui
         entityManager.persist(author)
         return author
     }
