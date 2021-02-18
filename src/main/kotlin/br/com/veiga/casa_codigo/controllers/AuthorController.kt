@@ -38,7 +38,6 @@ class AuthorController(
     @Transactional
     fun create(@Valid @RequestBody request: AuthorRequest) : Author  {
         val author = request.toModel()
-        // mais coisas aqui
         entityManager.persist(author)
         return author
     }
