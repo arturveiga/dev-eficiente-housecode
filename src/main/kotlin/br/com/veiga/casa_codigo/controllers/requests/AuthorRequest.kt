@@ -1,4 +1,4 @@
-package br.com.veiga.casa_codigo.controllers
+package br.com.veiga.casa_codigo.controllers.requests
 
 import br.com.veiga.casa_codigo.models.Author
 import java.util.UUID
