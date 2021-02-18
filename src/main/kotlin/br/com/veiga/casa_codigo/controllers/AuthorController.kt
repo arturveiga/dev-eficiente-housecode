@@ -3,6 +3,8 @@ package br.com.veiga.casa_codigo.controllers
 import br.com.veiga.casa_codigo.controllers.requests.AuthorRequest
 import br.com.veiga.casa_codigo.models.Author
 import org.springframework.http.HttpStatus
+import org.springframework.web.bind.WebDataBinder
+import org.springframework.web.bind.annotation.InitBinder
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -13,14 +15,20 @@ import javax.transaction.Transactional
 import javax.validation.Valid
 
 // CDD MAX Points = 7
-// ICP = 3
+// ICP = 4
 
 @RestController
 @RequestMapping("/v1/authors")
 class AuthorController(
-    val entityManager: EntityManager
+    val entityManager: EntityManager,
+    //1
+    val authorEmailDuplicatedValidator: AuthorEmailDuplicatedValidator
 ) {
 
+    @InitBinder
+    fun init(binder: WebDataBinder){
+        binder.addValidators(authorEmailDuplicatedValidator)
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -30,6 +38,7 @@ class AuthorController(
     @Transactional
     fun create(@Valid @RequestBody request: AuthorRequest) : Author  {
         val author = request.toModel()
+        // mais coisas aqui
         entityManager.persist(author)
         return author
     }
